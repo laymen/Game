@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
 import android.content.Context;
 
 import com.game.dataStruct.Point;
@@ -35,6 +36,9 @@ public class Predict {
 				ratio[i]=Double.parseDouble(line);
 			}
 			read.close();
+			String s="";
+			for(int i=0;i<10;++i)
+				s+=ratio[i];
 
 			input=context.getAssets().open("XYRatio.txt");
 			BufferedReader read2 = new BufferedReader(new InputStreamReader(input));
@@ -47,18 +51,19 @@ public class Predict {
 				}
 				++k;
 			}
+
 			read2.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("---------------加载失败--------------");
 		}
 	}
 
 	/**
-	 * 对数组列表点集分类
+	 * 对数组列表点集分类,返回最有可能的四个数
 	 * @param list
-	 * @return int
+	 * @return int[]
 	 */
-	public int predictList(ArrayList<Point> list){
+	public int[] predictList(ArrayList<Point> list){
 		int []predictData=GetClassMatrix.getClassifyMatrix(list);
 		return predict(predictData);
 	}
@@ -66,9 +71,9 @@ public class Predict {
 	/**
 	 * 对一维数组格式的矩阵数据进行分类
 	 * @param int[]
-	 * @return int
+	 * @return int[]
 	 */
-	private int predict(int [] testData){
+	public int[] predict(int [] testData){
 		double predictRatio[]=new double[10];
 		for(int i=0;i<32*32;++i)
 			for(int j=0;j<10;++j){
@@ -77,10 +82,17 @@ public class Predict {
 				else
 					predictRatio[j]-=Math.log(1-XYRatio[j][i]);
 			}
-		int min=0;
-		for(int i=1;i<10;++i)
-			if((predictRatio[i]-Math.log(ratio[i]))<(predictRatio[min]-Math.log(ratio[i])))
-				min=i;
-		return min;
+		int min;
+		int mark[]=new int[4];
+		for(int j=0;j<4;++j){
+			min=0;
+			for(int i=1;i<10;++i)
+				if((predictRatio[i]-Math.log(ratio[i]))<(predictRatio[min]-Math.log(ratio[i])))
+					min=i;
+			mark[j]=min;
+			predictRatio[min]=Integer.MAX_VALUE;
+
+		}
+		return mark;
 	}
 }

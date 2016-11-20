@@ -66,12 +66,13 @@
         <mouse.sunflower.com.game.FingerDrawView
             android:id="@+id/draw_view1"
             style="@style/layout_horizontal"
+            android:background="#FF4081"
             android:layout_weight="1" />
 
         <mouse.sunflower.com.game.FingerDrawView
             android:id="@+id/draw_view2"
             style="@style/layout_horizontal"
-            android:background="@android:color/white"
+            android:background="#F5C564"
             android:layout_weight="1" />
     </LinearLayout>
 
@@ -80,14 +81,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/reco_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="识别"
-            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/reset_button1"
@@ -103,6 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="识别"
+            android:background="@drawable/oval"
             android:textColor="@android:color/white" />
 
         <Button
