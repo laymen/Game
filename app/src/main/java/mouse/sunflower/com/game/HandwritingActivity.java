@@ -46,6 +46,7 @@ public class HandwritingActivity extends Activity {
     private int rNumber;//记录右边输入框里面的数据
     //添加音乐
     MediaPlayer mMediaPlayer;
+    int cyc = 0;
 
 
     @Override
@@ -86,11 +87,17 @@ public class HandwritingActivity extends Activity {
 
                 //左手
                 List<Point> points1 = drawViewL.getPoints();
-                handleReco1(points1, drawViewL, true);
+                boolean a = handleReco1(points1, drawViewL, true);
                 //右手
                 List<Point> points2 = drawViewR.getPoints();
-                handleReco2(points2, drawViewR, false);
-
+                boolean b = handleReco2(points2, drawViewR, false);
+                if (a == true && b == true) {
+                    cyc += 1;
+                }
+                Log.i("-----------------cyc---",cyc+"");
+                if (cyc == 5) {
+                    countdown += 2;
+                }
                 //进行下一轮随机数的生成
                 randomNumber();
             }
@@ -104,10 +111,10 @@ public class HandwritingActivity extends Activity {
                 randomNumber();//初始化随机数
                 startTimer();
                 //添加音乐播放
-                if (mMediaPlayer.isPlaying()){
+                if (mMediaPlayer.isPlaying()) {
                     mMediaPlayer.reset();
                 }
-                mMediaPlayer=MediaPlayer.create(HandwritingActivity.this,R.raw.bg);
+                mMediaPlayer = MediaPlayer.create(HandwritingActivity.this, R.raw.bg);
                 mMediaPlayer.setLooping(true);
                 mMediaPlayer.start();
 
@@ -154,7 +161,7 @@ public class HandwritingActivity extends Activity {
                     drawViewL.resetView();//清屏
                     drawViewR.resetView();
                     //关闭音乐
-                    if (mMediaPlayer.isPlaying()){
+                    if (mMediaPlayer.isPlaying()) {
                         mMediaPlayer.stop();
                     }
                     return;
@@ -188,7 +195,7 @@ public class HandwritingActivity extends Activity {
     /**
      * 对数据进行识别处理
      */
-    private void handleReco1(List<Point> points, FingerDrawView drawView, boolean mark) {
+    private boolean handleReco1(List<Point> points, FingerDrawView drawView, boolean mark) {
         if (points.size() == 0) {//说明用户没有输入任何的信息
             Toast.makeText(this, "请绘数字0-9！", Toast.LENGTH_SHORT).show();
         } else {
@@ -204,13 +211,17 @@ public class HandwritingActivity extends Activity {
             }
             boolean find = false;
             if (mark) {//true时为左手
-                for (int i = 0; i < numberlist.length; i++) {
+                for (int i = 0; i < numberlist.length - 1; i++) {
                     if (numberlist[i] == lNumber) {
                         counRightL++;
                         find = true;
-                        countdown+=2;
                         Log.i("mouse-左手输入对了:", "mouse-左手输入对了");
-                        break;
+                        Log.i("day-----day:", "左提示出的：" + lNumber);
+                        resultView.setText("正确数：" + counRightL + "&" + "错误数：" + countWrongL);
+                        //开始自动清屏了
+                        drawView.resetView();
+                        //break;
+                        return true;
                     }
                 }
                 if (find == false) {
@@ -218,18 +229,20 @@ public class HandwritingActivity extends Activity {
                     countWrongL++;
                     find = true;
                     Log.i("mouse-左手输入错了:", "mouse-左手输入错了");
+                    Log.i("day-----day:", "左提示出的：" + lNumber);
+                    resultView.setText("正确数：" + counRightL + "&" + "错误数：" + countWrongL);
+                    //开始自动清屏了
+                    drawView.resetView();
+                    return false;
                 }
 
             }
-            Log.i("day-----day:", "左提示出的：" + lNumber);
-            resultView.setText("正确数：" + counRightL + "&" + "错误数：" + countWrongL);
-            //开始自动清屏了
-            drawView.resetView();
-        }
 
+        }
+        return false;
     }
 
-    private void handleReco2(List<Point> points, FingerDrawView drawView, boolean mark) {
+    private boolean handleReco2(List<Point> points, FingerDrawView drawView, boolean mark) {
         if (points.size() == 0) {//说明用户没有输入任何的信息
             Toast.makeText(this, "请绘数字0-9！", Toast.LENGTH_SHORT).show();
         } else {
@@ -250,9 +263,12 @@ public class HandwritingActivity extends Activity {
                     if (numberlist[i] == rNumber) {
                         counRightL++;
                         find = true;
-                        countdown+=2;
                         Log.i("mouse-右手输入对了:", "右手输入对了");
-                        break;
+                        resultView.setText("正确数：" + counRightL + "&" + "错误数：" + countWrongL);
+                        //开始自动清屏了
+                        drawView.resetView();
+                        // break;
+                        return true;
                     }
                 }
                 if (find == false) {
@@ -260,13 +276,15 @@ public class HandwritingActivity extends Activity {
                     countWrongL++;
                     find = true;
                     Log.i("mouse-右手输入错了:", "右手输入错了");
+                    resultView.setText("正确数：" + counRightL + "&" + "错误数：" + countWrongL);
+                    //开始自动清屏了
+                    drawView.resetView();
+                    return false;
                 }
 
             }
         }
-        resultView.setText("正确数：" + counRightL + "&" + "错误数：" + countWrongL);
-        //开始自动清屏了
-        drawView.resetView();
+        return false;
     }
 
     private void randomNumber() {
